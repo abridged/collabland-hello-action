@@ -48,7 +48,7 @@ export async function main(
 
   const url = app.restServer.url;
   if (config.rest == null) {
-    console.log(`HelloWorld action is running at ${url}`);
+    console.log(`Hello action is running at ${url}`);
   }
   return {app, signingKey, signatureType: sigType};
 }

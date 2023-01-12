@@ -22,6 +22,7 @@
     "test": "lb-mocha --allow-console-logs \"dist/__tests__\"",
     "rebuild": "npm run clean && npm run build",
     "clean": "lb-clean dist *.tsbuildinfo .eslintcache",
+    "start": "npm run rebuild && node dist/server",
     "server": "node dist/server",
     "client": "node dist/client"
   },
