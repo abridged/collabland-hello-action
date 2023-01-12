@@ -8,39 +8,40 @@ import {
   generateEcdsaKeyPair,
   generateEd25519KeyPair,
 } from '@collabland/action';
-import {setEnvVar} from '@collabland/common';
+import {getEnvVar, setEnvVar} from '@collabland/common';
 import {ApplicationConfig} from '@loopback/core';
 import {HelloActionApplication} from './application.js';
 
-export async function main(
-  config: ApplicationConfig = {},
-  signatureType?: ActionSignatureType,
-) {
-  const sigType = signatureType ?? process.argv[2] ?? 'ecdsa';
-  let signingKey = undefined;
-  switch (sigType) {
-    case 'ecdsa': {
-      const keyPair = generateEcdsaKeyPair();
-      signingKey = keyPair.privateKey;
-      setEnvVar('COLLABLAND_ACTION_PUBLIC_KEY', keyPair.publicKey, true);
-      if (config.rest == null) {
-        console.log('Action signing key: %s', `${sigType}:${signingKey}`);
+export async function main(config: ApplicationConfig = {}, publicKey?: string) {
+  publicKey =
+    publicKey ?? process.argv[2] ?? getEnvVar('COLLABLAND_ACTION_PUBLIC_KEY');
+  let signingKey = '';
+  if (publicKey == null || publicKey === 'ecdsa' || publicKey === 'ed25519') {
+    const sigType = publicKey ?? 'ed25519';
+    switch (sigType) {
+      case 'ecdsa': {
+        const keyPair = generateEcdsaKeyPair();
+        signingKey = keyPair.privateKey;
+        setEnvVar('COLLABLAND_ACTION_PUBLIC_KEY', keyPair.publicKey, true);
+        if (config.rest == null) {
+          console.log('Action signing key: %s', `${sigType}:${signingKey}`);
+        }
+        break;
       }
-      break;
-    }
-    case 'ed25519': {
-      const keyPair = generateEd25519KeyPair();
-      signingKey = keyPair.privateKey;
-      setEnvVar('COLLABLAND_ACTION_PUBLIC_KEY', keyPair.publicKey, true);
-      if (config.rest == null) {
-        console.log('Action signing key: %s', `${sigType}:${signingKey}`);
+      case 'ed25519': {
+        const keyPair = generateEd25519KeyPair();
+        signingKey = keyPair.privateKey;
+        setEnvVar('COLLABLAND_ACTION_PUBLIC_KEY', keyPair.publicKey, true);
+        if (config.rest == null) {
+          console.log('Action signing key: %s', `${sigType}:${signingKey}`);
+        }
+        break;
       }
-      break;
-    }
-    default: {
-      throw new Error(
-        `Signature type not supported: ${sigType}. Please use ecdsa or ed25519.`,
-      );
+      default: {
+        throw new Error(
+          `Signature type not supported: ${sigType}. Please use ecdsa or ed25519.`,
+        );
+      }
     }
   }
   const app = new HelloActionApplication(config);
@@ -50,7 +51,7 @@ export async function main(
   if (config.rest == null) {
     console.log(`Hello action is running at ${url}`);
   }
-  return {app, signingKey, signatureType: sigType};
+  return {app, signingKey};
 }
 
 if (require.main === module) {

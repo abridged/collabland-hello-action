@@ -19,7 +19,7 @@ describe('HelloAction - ecdsa', () => {
 
   before('setupApplication', async () => {
     const restConfig = givenHttpServerConfig({});
-    ({app, signingKey} = await server({rest: restConfig}));
+    ({app, signingKey} = await server({rest: restConfig}, 'ecdsa'));
   });
 
   after(async () => {
