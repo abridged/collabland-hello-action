@@ -3,52 +3,79 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
+import {getFetch, handleFetchResponse, stringify} from '@collabland/common';
 import {
-  getEnvVar,
-  getFetch,
-  handleFetchResponse,
-  stringify,
-} from '@collabland/common';
-import {
-  APIApplicationCommandInteraction,
+  APIChatInputApplicationCommandInteraction,
   APIInteractionResponse,
   ApplicationCommandOptionType,
   ApplicationCommandType,
+  GuildMemberFlags,
   InteractionType,
 } from 'discord.js';
 
-import {getSigningKeyAndType, invokeWebhook} from '@collabland/action';
+import {
+  getActionKeyAndType,
+  getActionPrivateKey,
+  invokeWebhook,
+} from '@collabland/action';
 import {DiscordActionMetadata, DiscordActionRequest} from '@collabland/discord';
 
-export const MOCKED_INTERACTION: APIApplicationCommandInteraction = {
-  application_id: '1',
-  channel_id: '1',
-  id: '1',
-  app_permissions: '1',
-  type: InteractionType.ApplicationCommand,
-  token: '1',
-  version: 1,
-
+/**
+ * The interaction simulates `/hello-action John`
+ */
+export const MOCKED_INTERACTION: APIChatInputApplicationCommandInteraction = {
+  app_permissions: '4398046511103',
+  application_id: '715138531994894397',
+  channel_id: '941347407302651955',
   data: {
-    id: '1',
-    name: '1',
-    type: ApplicationCommandType.ChatInput,
+    guild_id: '929214449733230592',
+    id: '1063553299804078151',
+    name: 'hello-action',
     options: [
       {
         name: 'your-name',
-        value: 'John',
         type: ApplicationCommandOptionType.String,
+        value: 'John',
       },
     ],
+    type: ApplicationCommandType.ChatInput,
   },
+  guild_id: '929214449733230592',
+  guild_locale: 'en-US',
+  id: '1064236313630482482', // interaction id
   locale: 'en-US',
+  member: {
+    avatar: null,
+    communication_disabled_until: null,
+    deaf: false,
+    joined_at: '2022-01-08T03:26:28.791000+00:00',
+    mute: false,
+    nick: null,
+    pending: false,
+    permissions: '4398046511103',
+    premium_since: null,
+    roles: [],
+    flags: GuildMemberFlags.CompletedOnboarding,
+    user: {
+      avatar: 'a_8a814f663844a69d22344dc8f4983de6',
+      discriminator: '0000',
+      id: '781898624464453642',
+      public_flags: 0,
+      username: 'Test User',
+    },
+  },
+  token: '', // interaction token intentionally removed by Collab.Land
+  type: InteractionType.ApplicationCommand,
+  version: 1,
 };
+
 export async function main(base?: string, signingKey?: string) {
-  signingKey =
-    signingKey ?? process.argv[2] ?? getEnvVar('COLLABLAND_ACTION_PRIVATE_KEY');
-  if (signingKey == null) {
-    throw Error('Signing key is not configured');
-  }
+  signingKey = signingKey ?? process.argv[2];
+  const key =
+    signingKey != null
+      ? getActionKeyAndType(signingKey)
+      : getActionPrivateKey();
+
   const interaction = MOCKED_INTERACTION;
   const fetch = getFetch();
   const url = base ?? 'http://localhost:3000/hello-action';
@@ -57,11 +84,10 @@ export async function main(base?: string, signingKey?: string) {
   if (base == null) {
     console.log('Application commands: %s', stringify(metadata));
   }
-  const key = getSigningKeyAndType(signingKey);
   const response = await invokeWebhook<
     APIInteractionResponse,
     DiscordActionRequest
-  >(`${url}/interactions`, interaction, key.signingKey, key.signatureType);
+  >(`${url}/interactions`, interaction, key.key, key.type);
   if (base == null) {
     console.log('Discord interaction response: %s', stringify(response));
   }
