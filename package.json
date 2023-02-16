@@ -23,7 +23,7 @@
     "rebuild": "npm run clean && npm run build",
     "clean": "lb-clean dist *.tsbuildinfo .eslintcache",
     "start": "npm run rebuild && node dist/server",
-    "server": "node dist/server",
+    "server": "nodemon dist/server",
     "client": "node dist/client"
   },
   "repository": {
@@ -56,6 +56,7 @@
     "@loopback/eslint-config": "^13.0.8",
     "@loopback/testlab": "^5.0.8",
     "@types/node": "^18.11.15",
+    "nodemon": "^2.0.20",
     "typescript": "~4.9.5"
   },
   "copyright.owner": "Abridged, Inc.",
