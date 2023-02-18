@@ -43,6 +43,9 @@ export async function main(config: ApplicationConfig = {}, publicKey?: string) {
         );
       }
     }
+  } else {
+    // Set the public key
+    setEnvVar('COLLABLAND_ACTION_PUBLIC_KEY', publicKey, true);
   }
   const app = new HelloActionApplication(config);
   await app.start();

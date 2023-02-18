@@ -48,6 +48,22 @@ interactions.
    npm run server -- <public-key>
    ```
 
+   To run the server for Collab.Land QA bot:
+
+   ```sh
+   npm run server -- DhF7T98EBmH1ZFmdGJvBhkmdn3BfAqc3tz8LxER8VH2q
+   ```
+
+   You can find the Collab.Land QA action public keys at https://api-qa.collab.land/config.
+
+   ```json
+   {
+      "discordClientId": "715138531994894397",
+      "actionEcdsaPublicKey": "0x043b30458cf281461de368fd591b4c9b511a1b9263cea48517f41217ba14aa714fefea1adcfc9d8ae7ec0b4f7272f472178a5e674a1229ce5d2f2526244d62fbd8",
+      "actionEd25519PublicKey": "DhF7T98EBmH1ZFmdGJvBhkmdn3BfAqc3tz8LxER8VH2q"
+   }
+   ```
+
    ```
    > @collabland/example-hello-action@0.0.1 server
    > node dist/server
