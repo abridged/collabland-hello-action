@@ -3,11 +3,7 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {
-  ActionSignatureType,
-  generateEcdsaKeyPair,
-  generateEd25519KeyPair,
-} from '@collabland/action';
+import {generateEcdsaKeyPair, generateEd25519KeyPair} from '@collabland/action';
 import {getEnvVar, setEnvVar} from '@collabland/common';
 import {ApplicationConfig} from '@loopback/core';
 import {HelloActionApplication} from './application.js';
