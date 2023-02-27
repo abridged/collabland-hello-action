@@ -107,7 +107,7 @@ Open https://api-qa.collab.land/config from your browser:
 
 ## Build your own action
 
-1. Use `src/hello-action.ts` as the template
+1. Use `src/actions/hello-action.controller.ts` as the template
 2. Define action metadata for Discord
 3. Implement the `handle()` method
    - Process various Discord interactions
