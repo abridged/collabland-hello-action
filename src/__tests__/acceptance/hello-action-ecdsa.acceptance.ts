@@ -79,6 +79,7 @@ describe('HelloAction - ecdsa', () => {
         metadata: {
           name: 'HelloAction',
           shortName: 'hello-action',
+          supportedEnvs: ['dev', 'qa', 'staging'],
         },
         name: 'hello-action',
         type: 1,

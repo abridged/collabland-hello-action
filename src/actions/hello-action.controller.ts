@@ -153,6 +153,7 @@ export class HelloActionController extends BaseDiscordActionController<APIChatIn
         metadata: {
           name: 'HelloAction',
           shortName: 'hello-action',
+          supportedEnvs: ['dev', 'qa', 'staging'],
         },
         name: 'hello-action',
         type: ApplicationCommandType.ChatInput,

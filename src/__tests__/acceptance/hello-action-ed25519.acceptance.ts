@@ -31,6 +31,7 @@ describe('HelloAction - ed25519', () => {
         metadata: {
           name: 'HelloAction',
           shortName: 'hello-action',
+          supportedEnvs: ['dev', 'qa', 'staging'],
         },
         name: 'hello-action',
         type: 1,
