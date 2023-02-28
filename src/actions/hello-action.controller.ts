@@ -28,7 +28,7 @@ import {api} from '@loopback/rest';
 
 /**
  * HelloActionController is a LoopBack REST API controller that exposes endpoints
- * to support Collab.Land actions for Discord interactions.
+ * to support Collab Actions for Discord interactions.
  */
 @injectable({
   scope: BindingScope.SINGLETON,
@@ -52,7 +52,7 @@ export class HelloActionController extends BaseDiscordActionController<APIChatIn
         shortName: 'hello-action',
         version: {name: '0.0.1'},
         website: 'https://collab.land',
-        description: 'An example Collab.Land action',
+        description: 'An example Collab Action',
       }),
       /**
        * Supported Discord interactions. They allow Collab.Land to route Discord
@@ -70,7 +70,7 @@ export class HelloActionController extends BaseDiscordActionController<APIChatIn
 
   /**
    * Handle the Discord interaction
-   * @param interaction - Discord interaction with Collab.Land action context
+   * @param interaction - Discord interaction with Collab Action context
    * @returns - Discord interaction response
    */
   protected async handle(
