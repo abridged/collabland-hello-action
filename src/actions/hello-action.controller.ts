@@ -3,24 +3,25 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {sleep} from '@collabland/common';
+import {sleep, stringify} from '@collabland/common';
 import {
+  APIApplicationCommandInteraction,
   APIChatInputApplicationCommandInteraction,
   APIInteractionResponse,
   ApplicationCommandOptionType,
   ApplicationCommandSpec,
   ApplicationCommandType,
   BaseDiscordActionController,
-  buildSimpleResponse,
   DiscordActionMetadata,
   DiscordActionRequest,
   DiscordActionResponse,
   DiscordInteractionPattern,
-  getCommandOptionValue,
   InteractionType,
   MessageFlags,
   RESTPatchAPIWebhookWithTokenMessageJSONBody,
   RESTPostAPIWebhookWithTokenJSONBody,
+  buildSimpleResponse,
+  getCommandOptionValue,
 } from '@collabland/discord';
 import {MiniAppManifest} from '@collabland/models';
 import {BindingScope, injectable} from '@loopback/core';
@@ -34,7 +35,7 @@ import {api} from '@loopback/rest';
   scope: BindingScope.SINGLETON,
 })
 @api({basePath: '/hello-action'}) // Set the base path to `/hello-action`
-export class HelloActionController extends BaseDiscordActionController<APIChatInputApplicationCommandInteraction> {
+export class HelloActionController extends BaseDiscordActionController<APIApplicationCommandInteraction> {
   /**
    * Expose metadata for the action
    * @returns
@@ -74,19 +75,47 @@ export class HelloActionController extends BaseDiscordActionController<APIChatIn
    * @returns - Discord interaction response
    */
   protected async handle(
-    interaction: DiscordActionRequest<APIChatInputApplicationCommandInteraction>,
-  ): Promise<DiscordActionResponse> {
-    /**
-     * Get the value of `your-name` argument for `/hello-action`
-     */
-    const yourName = getCommandOptionValue(interaction, 'your-name');
-    const message = `Hello, ${
-      yourName ?? interaction.user?.username ?? 'World'
-    }!`;
-    /**
-     * Build a simple Discord message private to the user
-     */
-    const response: APIInteractionResponse = buildSimpleResponse(message, true);
+    interaction: DiscordActionRequest<APIApplicationCommandInteraction>,
+  ): Promise<DiscordActionResponse | undefined> {
+    let response: APIInteractionResponse | undefined = undefined;
+    let message: string = 'Hello';
+    if (interaction.data.type === ApplicationCommandType.ChatInput) {
+      // Handle `/hello-action`
+      /**
+       * Get the value of `your-name` argument for `/hello-action`
+       */
+      const yourName = getCommandOptionValue(
+        interaction as APIChatInputApplicationCommandInteraction,
+        'your-name',
+      );
+      message = `Hello, ${yourName ?? interaction.user?.username ?? 'World'}!`;
+      /**
+       * Build a simple Discord message private to the user
+       */
+      response = buildSimpleResponse(message, true);
+    } else if (interaction.data.type === ApplicationCommandType.Message) {
+      // Handle `Verify` message command
+      const discordMsg =
+        interaction.data.resolved.messages[interaction.data.target_id];
+      const content = stringify({
+        hello: discordMsg,
+      });
+      message = `Hello, ${
+        discordMsg.id ?? interaction.user?.username ?? 'World'
+      }!`;
+      response = buildSimpleResponse(content, true);
+    } else if (interaction.data.type === ApplicationCommandType.User) {
+      // Handle `Verify` user command
+      const discordUser =
+        interaction.data.resolved.users[interaction.data.target_id];
+      const content = stringify({
+        hello: discordUser,
+      });
+      message = `Hello, ${
+        discordUser.username ?? interaction.user?.username ?? 'World'
+      }!`;
+      response = buildSimpleResponse(content, true);
+    }
     /**
      * Allow advanced followup messages
      */
@@ -102,7 +131,7 @@ export class HelloActionController extends BaseDiscordActionController<APIChatIn
   }
 
   private async followup(
-    request: DiscordActionRequest<APIChatInputApplicationCommandInteraction>,
+    request: DiscordActionRequest<APIApplicationCommandInteraction>,
     message: string,
   ) {
     const callback = request.actionContext?.callbackUrl;
@@ -137,6 +166,12 @@ export class HelloActionController extends BaseDiscordActionController<APIChatIn
         // Handle `/hello-action` slash command
         type: InteractionType.ApplicationCommand,
         names: ['hello-action'],
+      },
+      {
+        // Handle `Verify` user/message command. This allows `hello-action` to be invoked
+        // upon Collab.Land's `Verify` user/message command is triggered by a user
+        type: InteractionType.ApplicationCommand,
+        names: ['Verify'],
       },
     ];
   }
