@@ -9,6 +9,7 @@
     "Discord",
     "loopback"
   ],
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -19,11 +20,11 @@
     "prettier:check": "npm run prettier:cli -- -l",
     "prettier:fix": "npm run prettier:cli -- --write",
     "pretest": "npm run build",
-    "test": "lb-mocha --allow-console-logs \"dist/__tests__\"",
+    "test": "lb-mocha --config .mocharc.cjs --allow-console-logs \"dist/__tests__\"",
     "rebuild": "npm run clean && npm run build",
     "clean": "lb-clean dist *.tsbuildinfo .eslintcache",
     "start": "npm run rebuild && node dist/server",
-    "server": "node dist/server",
+    "server": "node dist/server DhF7T98EBmH1ZFmdGJvBhkmdn3BfAqc3tz8LxER8VH2q",
     "client": "node dist/client"
   },
   "repository": {
@@ -41,22 +42,22 @@
     "!*/__tests__"
   ],
   "dependencies": {
-    "@collabland/action": "^0.6.0",
-    "@collabland/common": "^0.45.0",
-    "@collabland/discord": "^0.23.0",
-    "@collabland/models": "^0.25.0",
-    "@loopback/core": "^4.0.8",
-    "@loopback/rest": "^12.0.8",
-    "discord-api-types": "^0.37.32",
-    "discord.js": "^14.7.1",
+    "@collabland/action": "^0.7.1",
+    "@collabland/common": "^0.46.1",
+    "@collabland/discord": "^0.25.0",
+    "@collabland/models": "^0.26.0",
+    "@loopback/core": "^5.1.0",
+    "@loopback/rest": "^13.1.0",
+    "discord-api-types": "^0.37.48",
+    "discord.js": "^14.11.0",
     "tslib": "^2.0.0"
   },
   "devDependencies": {
-    "@loopback/build": "^9.0.8",
-    "@loopback/eslint-config": "^13.0.8",
-    "@loopback/testlab": "^5.0.8",
+    "@loopback/build": "^10.1.0",
+    "@loopback/eslint-config": "^14.0.1",
+    "@loopback/testlab": "^6.1.0",
     "@types/node": "^18.11.15",
-    "typescript": "~4.9.5"
+    "typescript": "~5.1.6"
   },
   "copyright.owner": "Abridged, Inc.",
   "author": "Abridged, Inc."

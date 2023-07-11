@@ -6,7 +6,7 @@
 import {getEnvVar, getEnvVarAsNumber} from '@collabland/common';
 import {ApplicationConfig} from '@loopback/core';
 import {RestApplication} from '@loopback/rest';
-import path from 'path';
+import {fileURLToPath} from 'url';
 import {HelloActionComponent} from './component.js';
 
 /**
@@ -16,7 +16,8 @@ export class HelloActionApplication extends RestApplication {
   constructor(config?: ApplicationConfig) {
     super(HelloActionApplication.resolveConfig(config));
     this.component(HelloActionComponent);
-    this.static('/', path.join(__dirname, '../public'));
+    const dir = fileURLToPath(new URL('../public', import.meta.url));
+    this.static('/', dir);
   }
 
   private static resolveConfig(config?: ApplicationConfig): ApplicationConfig {

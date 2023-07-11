@@ -3,13 +3,11 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
+import {isMain} from '@collabland/common';
 import {main} from './server.js';
 
 export * from './component.js';
 
-if (require.main === module) {
-  main().catch(err => {
-    console.error('Fail to start the Hello action: %O', err);
-    process.exit(1);
-  });
+if (isMain(import.meta.url)) {
+  await main();
 }

@@ -3,14 +3,23 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {generateEcdsaKeyPair, generateEd25519KeyPair} from '@collabland/action';
-import {getEnvVar, setEnvVar} from '@collabland/common';
+import {
+  ActionSignatureType,
+  generateEcdsaKeyPair,
+  generateEd25519KeyPair,
+} from '@collabland/action';
+import {getEnvVar, isMain, setEnvVar} from '@collabland/common';
 import {ApplicationConfig} from '@loopback/core';
 import {HelloActionApplication} from './application.js';
 
-export async function main(config: ApplicationConfig = {}, publicKey?: string) {
-  publicKey =
-    publicKey ?? process.argv[2] ?? getEnvVar('COLLABLAND_ACTION_PUBLIC_KEY');
+export async function main(
+  config: ApplicationConfig = {},
+  signatureType?: ActionSignatureType,
+) {
+  const publicKey =
+    signatureType ??
+    process.argv[2] ??
+    getEnvVar('COLLABLAND_ACTION_PUBLIC_KEY');
   let signingKey = '';
   if (publicKey == null || publicKey === 'ecdsa' || publicKey === 'ed25519') {
     const sigType = publicKey ?? 'ed25519';
@@ -18,7 +27,11 @@ export async function main(config: ApplicationConfig = {}, publicKey?: string) {
       case 'ecdsa': {
         const keyPair = generateEcdsaKeyPair();
         signingKey = keyPair.privateKey;
-        setEnvVar('COLLABLAND_ACTION_PUBLIC_KEY', keyPair.publicKey, true);
+        setEnvVar(
+          'COLLABLAND_ACTION_PUBLIC_KEY',
+          'ecdsa:' + keyPair.publicKey,
+          true,
+        );
         if (config.rest == null) {
           console.log('Action signing key: %s', `${sigType}:${signingKey}`);
         }
@@ -27,7 +40,11 @@ export async function main(config: ApplicationConfig = {}, publicKey?: string) {
       case 'ed25519': {
         const keyPair = generateEd25519KeyPair();
         signingKey = keyPair.privateKey;
-        setEnvVar('COLLABLAND_ACTION_PUBLIC_KEY', keyPair.publicKey, true);
+        setEnvVar(
+          'COLLABLAND_ACTION_PUBLIC_KEY',
+          'ed25519:' + keyPair.publicKey,
+          true,
+        );
         if (config.rest == null) {
           console.log('Action signing key: %s', `${sigType}:${signingKey}`);
         }
@@ -48,14 +65,11 @@ export async function main(config: ApplicationConfig = {}, publicKey?: string) {
 
   const url = app.restServer.url;
   if (config.rest == null) {
-    console.log(`Hello action is running at ${url}`);
+    console.log(`HelloWorld action is running at ${url}`);
   }
   return {app, signingKey};
 }
 
-if (require.main === module) {
-  main().catch(err => {
-    console.error('Fail to start the HelloWorld action: %O', err);
-    process.exit(1);
-  });
+if (isMain(import.meta.url)) {
+  await main();
 }

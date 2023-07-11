@@ -3,12 +3,18 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {getFetch, handleFetchResponse, stringify} from '@collabland/common';
+import {
+  getFetch,
+  handleFetchResponse,
+  isMain,
+  stringify,
+} from '@collabland/common';
 import {
   APIChatInputApplicationCommandInteraction,
   APIInteractionResponse,
   ApplicationCommandOptionType,
   ApplicationCommandType,
+  ChannelType,
   GuildMemberFlags,
   InteractionType,
 } from 'discord.js';
@@ -60,9 +66,13 @@ export const MOCKED_INTERACTION: APIChatInputApplicationCommandInteraction = {
       avatar: 'a_8a814f663844a69d22344dc8f4983de6',
       discriminator: '0000',
       id: '781898624464453642',
-      public_flags: 0,
       username: 'Test User',
+      global_name: 'testuser',
     },
+  },
+  channel: {
+    id: '01',
+    type: ChannelType.GuildText,
   },
   token: '', // interaction token intentionally removed by Collab.Land
   type: InteractionType.ApplicationCommand,
@@ -73,7 +83,7 @@ export async function main(base?: string, signingKey?: string) {
   signingKey = signingKey ?? process.argv[2];
   const key =
     signingKey != null
-      ? getActionKeyAndType(signingKey)
+      ? getActionKeyAndType(signingKey, true)
       : getActionPrivateKey();
 
   const interaction = MOCKED_INTERACTION;
@@ -94,9 +104,6 @@ export async function main(base?: string, signingKey?: string) {
   return {metadata, response};
 }
 
-if (require.main === module) {
-  main().catch(err => {
-    console.error('Fail to invoke the HelloWorld action: %O', err);
-    process.exit(1);
-  });
+if (isMain(import.meta.url)) {
+  await main();
 }

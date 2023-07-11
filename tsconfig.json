@@ -4,9 +4,11 @@
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
-    "composite": true
+    "composite": true,
+    "module": "NodeNext",
+    "target": "ES2022",
+    "useDefineForClassFields": false,
+    "moduleResolution": "nodenext"
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }

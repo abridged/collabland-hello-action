@@ -10,10 +10,11 @@ import {
 import {getFetch} from '@collabland/common';
 import {expect, givenHttpServerConfig} from '@loopback/testlab';
 import {HelloActionApplication} from '../../application.js';
-import {main as client, MOCKED_INTERACTION} from '../../client.js';
+import {MOCKED_INTERACTION, main as client} from '../../client.js';
 import {main as server} from '../../server.js';
 
 describe('HelloAction - ecdsa', () => {
+  const body = JSON.stringify(MOCKED_INTERACTION);
   let app: HelloActionApplication;
   let signingKey: string;
 
@@ -30,9 +31,7 @@ describe('HelloAction - ecdsa', () => {
     const fetch = getFetch();
     const res = await fetch(app.restServer.url + '/hello-action/interactions', {
       method: 'post',
-      body: JSON.stringify({
-        interaction: MOCKED_INTERACTION,
-      }),
+      body,
       headers: {
         [ActionSignatureTimestampHeader]: Date.now().toString(),
       },
@@ -44,9 +43,7 @@ describe('HelloAction - ecdsa', () => {
     const fetch = getFetch();
     const res = await fetch(app.restServer.url + '/hello-action/interactions', {
       method: 'post',
-      body: JSON.stringify({
-        interaction: MOCKED_INTERACTION,
-      }),
+      body,
       headers: {
         [ActionEcdsaSignatureHeader]: 'dummy-signature',
       },
@@ -58,9 +55,7 @@ describe('HelloAction - ecdsa', () => {
     const fetch = getFetch();
     const res = await fetch(app.restServer.url + '/hello-action/interactions', {
       method: 'post',
-      body: JSON.stringify({
-        interaction: MOCKED_INTERACTION,
-      }),
+      body,
       headers: {
         [ActionSignatureTimestampHeader]: Date.now().toString(),
         [ActionEcdsaSignatureHeader]: 'dummy-signature',
