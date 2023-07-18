@@ -42,10 +42,10 @@
     "!*/__tests__"
   ],
   "dependencies": {
-    "@collabland/action": "^0.7.1",
-    "@collabland/common": "^0.46.1",
-    "@collabland/discord": "^0.25.0",
-    "@collabland/models": "^0.26.0",
+    "@collabland/action": "^0.8.0",
+    "@collabland/common": "^0.47.0",
+    "@collabland/discord": "^0.26.0",
+    "@collabland/models": "^0.27.0",
     "@loopback/core": "^5.1.0",
     "@loopback/rest": "^13.1.0",
     "discord-api-types": "^0.37.48",
