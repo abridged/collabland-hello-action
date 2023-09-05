@@ -3,7 +3,13 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {EnvType, handleFetchResponse, loggers, sleep, stringify, tokenize} from '@collabland/common';
+import {
+  EnvType,
+  handleFetchResponse,
+  loggers,
+  sleep,
+  stringify,
+} from '@collabland/common';
 import {
   APIChatInputApplicationCommandInteraction,
   APIInteractionResponse,
@@ -11,31 +17,24 @@ import {
   ApplicationCommandSpec,
   ApplicationCommandType,
   BaseDiscordActionController,
-  buildSimpleResponse,
   DiscordActionMetadata,
   DiscordActionRequest,
   DiscordActionResponse,
   DiscordInteractionPattern,
-  getInvokingUser,
   InteractionResponseType,
   InteractionType,
   MessageFlags,
-  parseApplicationCommand,
-  parseMessageComponent,
   RESTPatchAPIWebhookWithTokenMessageJSONBody,
   RESTPostAPIWebhookWithTokenJSONBody,
+  buildSimpleResponse,
+  inspectUserPermissionsButton,
+  parseApplicationCommand,
 } from '@collabland/discord';
 import {MiniAppManifest} from '@collabland/models';
 import {BindingScope, injectable} from '@loopback/core';
-import {api, HttpErrors} from '@loopback/rest';
-import {ComponentType} from 'discord-api-types/v10';
-import {ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageActionRowComponentBuilder} from 'discord.js';
+import {api} from '@loopback/rest';
 
 const {debug} = loggers('collabland:example:hello-action');
-export const APPROVE_USER_PERMISSIONS = '$approve-user-permissions';
-export const DENY_USER_PERMISSIONS = '$deny-user-permissions';
-export const ACTION_REQUESTED_SCOPES = 'action-requested-scopes';
-export const ACTION_CLIENT_ID = 'action-client-id';
 
 /**
  * HelloActionController is a LoopBack REST API controller that exposes endpoints
@@ -46,42 +45,6 @@ export const ACTION_CLIENT_ID = 'action-client-id';
 })
 @api({basePath: '/hello-action'}) // Set the base path to `/hello-action`
 export class HelloActionController extends BaseDiscordActionController<APIChatInputApplicationCommandInteraction> {
-  inspectUserPermissionsButton(
-    interaction: DiscordActionRequest,
-  ) {
-    if (
-      interaction.type === InteractionType.MessageComponent &&
-      interaction.data.component_type === ComponentType.Button
-    ) {
-      const {customId} = parseMessageComponent(interaction);
-      if (
-        customId.startsWith(`${APPROVE_USER_PERMISSIONS}:`) ||
-        customId.startsWith(`${DENY_USER_PERMISSIONS}:`)
-      ) {
-        const [action, interactionId] = customId.split(':');
-        // Look up the scopes from the embedded fields
-        const scopesField = interaction.message.embeds[0]?.fields?.find(
-          f => f.name === ACTION_REQUESTED_SCOPES,
-        );
-        const scopes = tokenize(scopesField?.value, ' ');
-        const appIdField = interaction.message.embeds[0]?.fields?.find(
-          f => f.name === ACTION_CLIENT_ID,
-        );
-        const user = getInvokingUser(interaction);
-        return {
-          action,
-          interactionId,
-          scopes,
-          appId: appIdField?.value,
-          user,
-          apiToken: interaction.actionContext?.apiToken,
-        };
-      }
-    }
-    return undefined;
-  }
-
-
   /**
    * Expose metadata for the action
    * @returns
@@ -136,7 +99,7 @@ export class HelloActionController extends BaseDiscordActionController<APIChatIn
   protected async handle(
     interaction: DiscordActionRequest<APIChatInputApplicationCommandInteraction>,
   ): Promise<DiscordActionResponse> {
-    const userPerms = this.inspectUserPermissionsButton(interaction);
+    const userPerms = inspectUserPermissionsButton(interaction);
     debug('User permissions: %O', userPerms);
     if (userPerms != null) {
       const apiToken = userPerms.apiToken;
@@ -273,8 +236,8 @@ export class HelloActionController extends BaseDiscordActionController<APIChatIn
           name: 'HelloAction',
           shortName: 'hello-action',
           supportedEnvs: [
-            EnvType.QA,
             EnvType.DEV,
+            EnvType.QA,
             EnvType.STAGING,
           ],
         },
@@ -284,7 +247,7 @@ export class HelloActionController extends BaseDiscordActionController<APIChatIn
         options: [
           {
             name: 'your-name',
-            description: 'Name of person we\'re greeting',
+            description: "Name of person we're greeting",
             type: ApplicationCommandOptionType.String,
             required: true,
           },
@@ -292,67 +255,5 @@ export class HelloActionController extends BaseDiscordActionController<APIChatIn
       },
     ];
     return commands;
-  }
-
-  async requestUserPermissions(
-    request: DiscordActionRequest<APIChatInputApplicationCommandInteraction>,
-    permissions: string[],
-  ) {
-    const metadata = await this.getMetadata();
-    if (metadata.manifest.clientId == null) {
-      throw new HttpErrors.BadRequest(`Missing clientId in manifest`);
-    }
-    const msg = this.buildUserPermissionMessage(
-      request.id,
-      metadata.manifest.clientId,
-      permissions,
-    );
-
-    return this.followupMessage(request, msg);
-  }
-
-  buildUserPermissionMessage(
-    interactionId: string,
-    clientId: string,
-    scopes: string[],
-  ) {
-    const builder = new EmbedBuilder()
-      .setTitle('Request user permissions')
-      .addFields(
-        {
-          name: ACTION_CLIENT_ID,
-          value: clientId,
-        },
-        {
-          name: ACTION_REQUESTED_SCOPES,
-          value: scopes.join(' '),
-        },
-      )
-      .setDescription(
-        `Action ${clientId} requires the following permissions:\n` +
-        scopes.map(p => `- **${p}**`).join('\n'),
-      );
-    const row =
-      new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-        new ButtonBuilder()
-          .setCustomId(`${APPROVE_USER_PERMISSIONS}:${interactionId}`)
-          .setLabel(`Approve`)
-          .setEmoji({
-            name: '✅',
-          })
-          .setStyle(ButtonStyle.Primary),
-        new ButtonBuilder()
-          .setCustomId(`${DENY_USER_PERMISSIONS}:${interactionId}`)
-          .setLabel(`Deny`)
-          .setEmoji({
-            name: '❌',
-          })
-          .setStyle(ButtonStyle.Primary),
-      );
-    const msg: RESTPostAPIWebhookWithTokenJSONBody = {
-      embeds: [builder.toJSON()],
-      components: [row.toJSON()],
-    };
-    return msg;
   }
 }
