@@ -37,6 +37,10 @@ Next, follow the instructions on the docs to test the Action
 
 1. [Run the Action Server](https://dev.collab.land/docs/upstream-integrations/collab-actions/getting-started-with-collab-actions#run-the-action-server-locally)
 
+   ```bash
+   npm run server -- DhF7T98EBmH1ZFmdGJvBhkmdn3BfAqc3tz8LxER8VH2q
+   ```
+
 Next, once you get to play with this simple action, try to implement something new and test it locally
 
 2. [Implement & test your Action locally](https://dev.collab.land/docs/upstream-integrations/collab-actions/getting-started-with-collab-actions#test-the-actions-in-a-discord-server)
