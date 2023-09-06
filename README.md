@@ -16,13 +16,31 @@ Node.js and npm (Node Package Manager) must be installed on your system.
 Let's try out this `/hello-action` example to see how what Collab Action is
 capable of!
 
-1. [Install hello-action template](https://dev.collab.land/docs/upstream-integrations/build-a-miniapp)
+### Clone the Action 
 
-Next, once you get to play with this simple action, try to implement something
-new and test it locally
+```bash
+git clone https://github.com/abridged/collabland-hello-action.git
+```
+### Navigate to the project directory and install the project dependencies
 
-2. [Implement & test your Action locally](https://dev.collab.land/docs/upstream-integrations/test-locally)
+```bash
+cd collabland-hello-action
+npm install
+```
+
+### Build the project
+
+```bash
+npm run build
+```
+Next, follow the instructions on the docs to test the Action
+
+1. [Run the Action Server](https://dev.collab.land/docs/upstream-integrations/collab-actions/getting-started-with-collab-actions#run-the-action-server-locally)
+
+Next, once you get to play with this simple action, try to implement something new and test it locally
+
+2. [Implement & test your Action locally](https://dev.collab.land/docs/upstream-integrations/collab-actions/getting-started-with-collab-actions#test-the-actions-in-a-discord-server)
 
 Explore more possibilities with Collab Action!
 
-3. [Build a custom Collab Action](https://dev.collab.land/docs/upstream-integrations/build-a-custom-action)
+3. [Build a custom Collab Action](https://dev.collab.land/docs/upstream-integrations/collab-actions/getting-started-with-collab-actions) 
