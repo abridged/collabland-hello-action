@@ -57,7 +57,7 @@
     "@loopback/eslint-config": "^14.0.1",
     "@loopback/testlab": "^6.1.0",
     "@types/node": "^18.11.15",
-    "typescript": "~5.6.0"
+    "typescript": "~5.7.0"
   },
   "copyright.owner": "Abridged, Inc.",
   "author": "Abridged, Inc."
