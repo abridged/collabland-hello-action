@@ -1,4 +1,4 @@
-# @collabland/example-hello-action
+monopol910# @collabland/example-hello-action
 
 This example illustrates how to implement a Collab Action for Discord
 interactions.
