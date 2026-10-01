@@ -46,16 +46,16 @@
     "@collabland/common": "^0.50.0",
     "@collabland/discord": "^0.29.0",
     "@collabland/models": "^0.30.0",
-    "@loopback/core": "^5.1.0",
-    "@loopback/rest": "^13.1.0",
+    "@loopback/core": "^7.0.0",
+    "@loopback/rest": "^15.0.0",
     "discord-api-types": "^0.38.0",
     "discord.js": "^14.11.0",
     "tslib": "^2.0.0"
   },
   "devDependencies": {
-    "@loopback/build": "^10.1.0",
-    "@loopback/eslint-config": "^14.0.1",
-    "@loopback/testlab": "^6.1.0",
+    "@loopback/build": "^12.0.0",
+    "@loopback/eslint-config": "^16.0.0",
+    "@loopback/testlab": "^8.0.0",
     "@types/node": "^18.11.15",
     "typescript": "~5.9.0"
   },
